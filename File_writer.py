@@ -11,5 +11,3 @@ class FileWriter:
         with open(self.filename, "a", encoding="utf-8") as f:
             f.write(f"[{timestamp}] " + " ".join(data) + "\n")
 
-#jjggcff
-#987654F
