@@ -10,3 +10,6 @@ class FileWriter:
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         with open(self.filename, "a", encoding="utf-8") as f:
             f.write(f"[{timestamp}] " + " ".join(data) + "\n")
+
+#jjggcff
+#987654F
