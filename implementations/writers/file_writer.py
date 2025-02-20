@@ -7,7 +7,7 @@ class FileWriter(IWriter):
 
     def write(self, data: str) -> None:
         if not self.file:
-            self.file = open(self.filepath, 'a')
+            self.file = open(self.filepath, 'a', encoding='utf-8')
         self.file.write(data + '\n')
         self.file.flush()
 

