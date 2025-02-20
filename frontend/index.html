@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>לוח בקרה - קילוגר</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <!-- וידאו רקע מונפש - אנימציה של סייבר -->
+    <div class="background-animation">
+        <div class="cyber-background"></div>
+    </div>
+
+    <div class="container">
+        <h1>לוח בקרה - קילוגר</h1>
+        <p>מספר מחשבים פעילים: <span id="computer-count">2</span></p>
+
+        <h2>שימוש ממוצע</h2>
+        <button onclick="startRecording()">הפעל הקלטה</button>
+        <button onclick="stopRecording()">עצור הקלטה</button>
+
+        <input type="text" id="search-box" placeholder="חפש במחשב ספציפי">
+        <button onclick="search()">חפש</button>
+
+        <h2>רשימת מחשבים</h2>
+        <div class="computer-list">
+            <div class="computer" onclick="openPopup('מחשב 1')">
+                <i class="fas fa-laptop"></i>
+                <span>מחשב 1</span>
+            </div>
+            <div class="computer" onclick="openPopup('מחשב 2')">
+                <i class="fas fa-laptop"></i>
+                <span>מחשב 2</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- חלון פופ-אפ -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <h2 id="popup-title"></h2>
+            <label>בחר תאריך ושעה:</label>
+            <input type="datetime-local" id="datetime-picker">
+            <br>
+            <input type="text" id="popup-search" placeholder="חפש נתונים במחשב">
+            <button onclick="searchPopup()">חפש</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
