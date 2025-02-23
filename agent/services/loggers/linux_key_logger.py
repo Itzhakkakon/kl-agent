@@ -5,11 +5,11 @@ class LinuxKeyLogger(IKeyLogger):
     def __init__(self):
         self.logged_keys = []
     
-    def start_logging(self):
+    def start(self):
         # Linux-specific implementation using evdev
         pass
 
-    def stop_logging(self):
+    def stop(self):
         pass
 
     def get_pressed_keys(self):
