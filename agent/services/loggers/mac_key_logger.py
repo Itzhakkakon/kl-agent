@@ -5,11 +5,11 @@ class MacKeyLogger(IKeyLogger):
     def __init__(self):
         self.logged_keys = []
     
-    def start_logging(self):
+    def start(self):
         # macOS-specific implementation using AppKit
         pass
 
-    def stop_logging(self):
+    def stop(self):
         pass
 
     def get_pressed_keys(self):

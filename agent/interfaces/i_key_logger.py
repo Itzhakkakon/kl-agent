@@ -8,13 +8,11 @@ class IKeyLogger(ABC):
         pass
     
     @abstractmethod
-    def start_logging(self) -> None:
-        """Start listening to keyboard events"""
+    def start(self):
         pass
 
     @abstractmethod
-    def stop_logging(self) -> None:
-        """Stop listening to keyboard events"""
+    def stop(self):
         pass
 
     @abstractmethod

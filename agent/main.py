@@ -7,9 +7,9 @@ def main():
     
     try:
         print("Press Esc to stop logging...")
-        logger.start_logging()
+        logger.start()
     finally:
-        logger.stop_logging()
+        logger.stop()
         writer.close()
     
 if __name__ == "__main__":

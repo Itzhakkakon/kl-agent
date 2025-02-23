@@ -1,5 +1,5 @@
-from implementations.writers.file_writer import FileWriter
-from implementations.writers.network_writer import NetworkWriter
+from services.writers.file_writer import FileWriter
+from services.writers.network_writer import NetworkWriter
 from interfaces.i_writer import IWriter
 
 class WriterFactory:

