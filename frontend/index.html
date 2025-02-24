@@ -1,129 +1,105 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="he">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>לוח בקרה - קילוגר</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gauge-js/dist/gauge.min.js"></script>
+    <script src="https://bernii.github.io/gauge.js/dist/gauge.min.js"></script>
 </head>
 <body>
-    <!-- Background Elements -->
+
+    <!-- וידאו רקע מונפש - אנימציה של סייבר -->
     <div class="background-animation">
         <div class="cyber-background"></div>
     </div>
 
-    <!-- Main Content -->
+    <!-- Add logo with new image -->
+    <div class="logo">
+        <img src="https://kodcode.org.il/wp-content/uploads/2024/11/לוגו-קודקוד-1.jpg" alt="KodKod Logo">
+    </div>
+
     <div class="container">
         <h1>לוח בקרה - קילוגר</h1>
-        <p>מספר מחשבים פעילים: <span id="computer-count">2</span></p>
+        
+        <div class="statistics-section">
+            <h2>סטטיסטיקת פעילות</h2>
+            <canvas id="activity-gauge"></canvas>
+            <p>זמן פעילות היום: <span id="active-time">0</span> שעות</p>
+        </div>
 
-        <h2>שימוש ממוצע</h2>
-        <button onclick="startRecording()">הפעל הקלטה</button>
-        <button onclick="stopRecording()">עצור הקלטה</button>
+        <div class="controls-section">
+            <p>מספר מחשבים פעילים: <span id="computer-count">2</span></p>
+            <h2>שימוש ממוצע</h2>
+            <button onclick="startRecording()">הפעל הקלטה</button>
+            <button onclick="stopRecording()">עצור הקלטה</button>
 
-        <input type="text" id="search-box" placeholder="חפש במחשב ספציפי">
-        <button onclick="search()">חפש</button>
-
-        <button class="stats-button" onclick="goToStats()">צפה בגרפים סטטיסטיים</button>
-
-        <div class="user-management">
-            <h2>ניהול משתמשים</h2>
-            <table id="user-table">
-                <tr>
-                    <th>שם משתמש</th>
-                    <th>פעולות</th>
-                </tr>
-                <tr>
-                    <td>משתמש 1</td>
-                    <td><button onclick="removeUser(this)">הסר</button></td>
-                </tr>
-                <tr>
-                    <td>משתמש 2</td>
-                    <td><button onclick="removeUser(this)">הסר</button></td>
-                </tr>
-            </table>
-            <button onclick="addUser()">הוסף משתמש</button>
+            <input type="text" id="search-box" placeholder="חפש במחשב ספציפי">
+            <button onclick="search()">חפש</button>
         </div>
 
         <h2>רשימת מחשבים</h2>
-        <div class="computer-list">
-            <div class="computer" onclick="openPopup('מחשב 1')">
+        <div id="computer-list">
+            <!-- <div class="computer" onclick="openPopup('מחשב 1')">
                 <i class="fas fa-laptop"></i>
                 <span>מחשב 1</span>
             </div>
             <div class="computer" onclick="openPopup('מחשב 2')">
                 <i class="fas fa-laptop"></i>
                 <span>מחשב 2</span>
-            </div>
+            </div> -->
         </div>
-
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-            <button class="quick-action-btn" onclick="toggleDarkMode()">
-                <i class="fas fa-moon"></i>
-                מצב לילה
-            </button>
-            <button class="quick-action-btn" onclick="exportLogs('json')">
-                <i class="fas fa-file-export"></i>
-                ייצוא לוגים
-            </button>
-            <button class="quick-action-btn" onclick="openSettings()">
-                <i class="fas fa-cog"></i>
-                הגדרות
-            </button>
-        </div>
-
-        <!-- Activity Overview -->
-        <div class="activity-overview">
-            <h2>סקירת פעילות</h2>
-            <div class="activity-graph" id="activityGraph"></div>
-            <div class="activity-stats">
-                <p>משתמשים פעילים: <span id="active-users">0</span></p>
-                <p>סה"כ הקלטות: <span id="total-recordings">0</span></p>
-            </div>
-        </div>
-
-        <!-- Settings Panel -->
-        <div class="settings-panel" id="settingsPanel">
-            <h3>הגדרות</h3>
-            <div class="settings-group">
-                <label>
-                    <input type="checkbox" onchange="toggleAutoRefresh()"> 
-                    רענון אוטומטי
-                </label>
-                <label>
-                    <input type="checkbox" onchange="toggleNotifications()">
-                    התראות
-                </label>
-                <select onchange="changeUpdateInterval(this.value)">
-                    <option value="5000">עדכון כל 5 שניות</option>
-                    <option value="10000">עדכון כל 10 שניות</option>
-                    <option value="30000">עדכון כל 30 שניות</option>
-                </select>
-            </div>
-        </div>
+        <button class="add-computer-btn" onclick="openAddComputerPopup()">
+            <i class="fas fa-plus"></i>
+            הוסף מחשב
+        </button>
     </div>
 
-    <!-- Popup -->
+    <!-- חלון פופ-אפ -->
     <div id="popup" class="popup">
         <div class="popup-content">
             <span class="close" onclick="closePopup()">&times;</span>
             <h2 id="popup-title"></h2>
-            <label>בחר תאריך ושעה:</label>
-            <input type="datetime-local" id="datetime-picker">
-            <br>
-            <input type="text" id="popup-search" placeholder="חפש נתונים במחשב">
-            <button onclick="searchPopup()">חפש</button>
+            
+            <!-- Add this new section for computer details -->
+            <div id="computer-details" class="computer-details"></div>
+
+            <div class="popup-controls">
+                <label>בחר תאריך ושעה:</label>
+                <input type="datetime-local" id="datetime-picker">
+                <br>
+                <input type="text" id="popup-search" placeholder="חפש נתונים במחשב">
+                <button onclick="searchPopup()">חפש</button>
+            </div>
         </div>
     </div>
 
-    <!-- Alerts -->
-    <div class="alert" id="alertBox"></div>
+    <!-- חלון פופ-אפ להוספת מחשב -->
+    <div id="add-computer-popup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closeAddComputerPopup()">&times;</span>
+            <h2>הוספת מחשב חדש</h2>
+            <form id="add-computer-form">
+                <div class="form-group">
+                    <label for="computer-name">שם המחשב:</label>
+                    <input type="text" id="computer-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="computer-ip">כתובת IP:</label>
+                    <input type="text" id="computer-ip" required>
+                </div>
+                <div class="form-group">
+                    <label for="computer-location">מיקום:</label>
+                    <input type="text" id="computer-location">
+                </div>
+                <button type="submit" class="submit-btn">הוסף מחשב</button>
+            </form>
+        </div>
+    </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="dashboard.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
