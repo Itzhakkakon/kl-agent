@@ -53,7 +53,7 @@ data_b =[
 # Get all computers (all computers)
 @app.route('/api/computers', methods=['GET'])
 def get_computers():
-    simplified_students = [{"pc": d["pc"]} for d in data_b]
+    simplified_students = [d["pc"] for d in data_b]
     print(simplified_students)
     return jsonify(simplified_students)
 
