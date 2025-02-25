@@ -6,7 +6,7 @@ class MacKeyLogger(IKeyLogger):
         self.logged_keys = []
     
     def start(self):
-        # macOS-specific implementation using AppKit
+        # macOS-specific implementation using AppKiaaaa
         pass
 
     def stop(self):
