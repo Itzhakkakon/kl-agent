@@ -4,7 +4,9 @@ class XOREncryptor(IEncryptor):
     def __init__(self, key: bytes):
         self.key = key
 
-    # TODO: Implement the XOR encryption algorithm
     def encrypt(self, data: bytes) -> bytes:
-        ...
-        
+        result = bytearray()
+        for i in range(len(data)):
+            result.append(data[i] ^ self.key[i % len(self.key)])
+        return bytes(result)
+
