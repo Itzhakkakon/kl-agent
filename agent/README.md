@@ -87,8 +87,9 @@ kl-agent/
 │   ├── i_key_logger.py      # Key logger interface
 │   └── i_encryptor.py       # Encryptor interface
 ├── factories/
-│   ├── writer_factory.py    # Writer creation factory
-│   └── key_logger_factory.py # Logger creation factory
+│   ├── writer_factory.py        # Writer creation factory
+│   ├── window_title_factory.py  # Window title creation factory
+│   └── key_logger_factory.py    # Logger creation factory
 ├── service/
 │   ├── file_writer.py       # File writing implementation
 │   ├── key_logger.py        # Key logging implementation
