@@ -10,3 +10,7 @@ class XOREncryptor(IEncryptor):
             result.append(data[i] ^ self.key[i % len(self.key)])
         return bytes(result)
 
+    def decrypt(self, data: bytes) -> bytes:
+        # XOR is symmetric, so decrypt is the same as encrypt
+        return self.encrypt(data)
+
