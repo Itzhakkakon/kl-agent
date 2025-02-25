@@ -8,11 +8,13 @@ class IKeyLogger(ABC):
         pass
     
     @abstractmethod
-    def start(self):
+    def start(self) -> None:
+        """Start the key logger."""
         pass
 
     @abstractmethod
-    def stop(self):
+    def stop(self) -> None:
+        """Stop the key logger."""
         pass
 
     @abstractmethod
