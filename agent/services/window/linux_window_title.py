@@ -2,14 +2,17 @@ from interfaces.i_window_title import IWindowTitle
 from .linux.window_title_methods import LinuxWindowTitleMethods
 
 class LinuxWindowTitle(IWindowTitle):
-    @staticmethod
-    def get_active_window_title() -> str:
+    def get_active_window_title(self) -> str:
         methods = LinuxWindowTitleMethods()
-        try:
-            title = methods.try_xdotool()
-            if title and title not in ["Unknown", "No window found", "Error"]:
-                # print(f"Window title: {title}", "from try_xdotool")
-                return title
-        except:
-            pass
+        
+        # Try different methods in order of preference
+        for method_name in ["try_xdotool", "try_ewmh", "try_xprop", "try_wmctrl", "try_xlib"]:
+            try:
+                method = getattr(methods, method_name)
+                title = method()
+                if title and title not in ["Unknown", "No window found", "Error"]:
+                    return title
+            except Exception:
+                continue
+        
         return "Unknown"

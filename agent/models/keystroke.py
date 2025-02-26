@@ -25,10 +25,10 @@ class Keystroke:
         """Return the representation of the keystroke."""
         return f"Keystroke(key={self.key}, timestamp={self.timestamp}, window='{self.window}')"
     
-    def to_dict(self) -> dict:
-        """Return dictionary representation of the keystroke."""
-        return {
-            "key": str(self),
-            "timestamp": self.timestamp,
-            "window": self.window
-        }
+    # def to_dict(self) -> dict:
+    #     """Return dictionary representation of the keystroke."""
+    #     return {
+    #         "key": str(self),
+    #         "timestamp": self.timestamp,
+    #         "window": self.window
+    #     }

