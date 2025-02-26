@@ -1,129 +1,106 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="he">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>לוח בקרה - קילוגר</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <!-- Background Elements -->
-    <div class="background-animation">
-        <div class="cyber-background"></div>
-    </div>
-
-    <!-- Main Content -->
+    <div class="cyber-background"></div>
+    
     <div class="container">
         <h1>לוח בקרה - קילוגר</h1>
-        <p>מספר מחשבים פעילים: <span id="computer-count">2</span></p>
-
-        <h2>שימוש ממוצע</h2>
-        <button onclick="startRecording()">הפעל הקלטה</button>
-        <button onclick="stopRecording()">עצור הקלטה</button>
-
-        <input type="text" id="search-box" placeholder="חפש במחשב ספציפי">
-        <button onclick="search()">חפש</button>
-
-        <button class="stats-button" onclick="goToStats()">צפה בגרפים סטטיסטיים</button>
-
-        <div class="user-management">
-            <h2>ניהול משתמשים</h2>
-            <table id="user-table">
-                <tr>
-                    <th>שם משתמש</th>
-                    <th>פעולות</th>
-                </tr>
-                <tr>
-                    <td>משתמש 1</td>
-                    <td><button onclick="removeUser(this)">הסר</button></td>
-                </tr>
-                <tr>
-                    <td>משתמש 2</td>
-                    <td><button onclick="removeUser(this)">הסר</button></td>
-                </tr>
-            </table>
-            <button onclick="addUser()">הוסף משתמש</button>
-        </div>
-
-        <h2>רשימת מחשבים</h2>
-        <div class="computer-list">
-            <div class="computer" onclick="openPopup('מחשב 1')">
-                <i class="fas fa-laptop"></i>
-                <span>מחשב 1</span>
+        
+        <!-- חיפוש גלובלי -->
+        <div class="search-controls">
+            <div class="search-inputs-container">
+                <div class="search-row">
+                    <div class="search-input-group">
+                        <label>חיפוש חלון:</label>
+                        <input type="text" id="window-filter" placeholder="הקלד חלון...">
+                    </div>
+                    <div class="search-input-group">
+                        <label>חיפוש תוכן:</label>
+                        <input type="text" id="content-filter" placeholder="הקלד תוכן...">
+                    </div>
+                </div>
+                <button onclick="search()" class="search-button-full">
+                    <i class="fas fa-search"></i> חפש
+                </button>
             </div>
-            <div class="computer" onclick="openPopup('מחשב 2')">
-                <i class="fas fa-laptop"></i>
-                <span>מחשב 2</span>
+            <div class="date-range">
+                <div class="date-input">
+                    <label>מתאריך:</label>
+                    <input type="datetime-local" id="start-date">
+                    <i class="fas fa-calendar calendar-trigger"></i>
+                </div>
+                <div class="date-input">
+                    <label>עד תאריך:</label>
+                    <input type="datetime-local" id="end-date">
+                    <i class="fas fa-calendar calendar-trigger"></i>
+                </div>
             </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-            <button class="quick-action-btn" onclick="toggleDarkMode()">
-                <i class="fas fa-moon"></i>
-                מצב לילה
-            </button>
-            <button class="quick-action-btn" onclick="exportLogs('json')">
-                <i class="fas fa-file-export"></i>
-                ייצוא לוגים
-            </button>
-            <button class="quick-action-btn" onclick="openSettings()">
-                <i class="fas fa-cog"></i>
-                הגדרות
-            </button>
-        </div>
-
-        <!-- Activity Overview -->
-        <div class="activity-overview">
-            <h2>סקירת פעילות</h2>
-            <div class="activity-graph" id="activityGraph"></div>
-            <div class="activity-stats">
-                <p>משתמשים פעילים: <span id="active-users">0</span></p>
-                <p>סה"כ הקלטות: <span id="total-recordings">0</span></p>
-            </div>
-        </div>
-
-        <!-- Settings Panel -->
-        <div class="settings-panel" id="settingsPanel">
-            <h3>הגדרות</h3>
-            <div class="settings-group">
-                <label>
-                    <input type="checkbox" onchange="toggleAutoRefresh()"> 
-                    רענון אוטומטי
-                </label>
-                <label>
-                    <input type="checkbox" onchange="toggleNotifications()">
-                    התראות
-                </label>
-                <select onchange="changeUpdateInterval(this.value)">
-                    <option value="5000">עדכון כל 5 שניות</option>
-                    <option value="10000">עדכון כל 10 שניות</option>
-                    <option value="30000">עדכון כל 30 שניות</option>
-                </select>
-            </div>
-        </div>
+        <!-- רשימת מחשבים -->
+        <h2>מחשבים מחוברים</h2>
+        <div id="computer-list"></div>
     </div>
 
-    <!-- Popup -->
-    <div id="popup" class="popup">
+    <!-- פופ-אפ פרטי מחשב -->
+    <div id="computer-details-popup" class="popup">
         <div class="popup-content">
-            <span class="close" onclick="closePopup()">&times;</span>
-            <h2 id="popup-title"></h2>
-            <label>בחר תאריך ושעה:</label>
-            <input type="datetime-local" id="datetime-picker">
-            <br>
-            <input type="text" id="popup-search" placeholder="חפש נתונים במחשב">
-            <button onclick="searchPopup()">חפש</button>
+            <span class="close" onclick="closeComputerDetails()">&times;</span>
+            <h2 id="computer-name-title"></h2>
+            <div class="computer-info"></div>
+            
+            <!-- חיפוש בתוך מחשב ספציפי -->
+            <div class="search-controls">
+                <div class="search-inputs-container">
+                    <div class="search-row">
+                        <div class="search-input-group">
+                            <label>חיפוש חלון:</label>
+                            <input type="text" id="computer-window-filter" placeholder="הקלד שם חלון...">
+                        </div>
+                        <div class="search-input-group">
+                            <label>חיפוש תוכן:</label>
+                            <input type="text" id="computer-content-filter" placeholder="הקלד תוכן...">
+                        </div>
+                    </div>
+                    <button onclick="searchComputerData()" class="search-button-full">
+                        <i class="fas fa-search"></i> חפש
+                    </button>
+                </div>
+                <div class="date-range">
+                    <div class="date-input">
+                        <label>מתאריך:</label>
+                        <input type="datetime-local" id="computer-start-date">
+                        <i class="fas fa-calendar calendar-trigger"></i>
+                    </div>
+                    <div class="date-input">
+                        <label>עד תאריך:</label>
+                        <input type="datetime-local" id="computer-end-date">
+                        <i class="fas fa-calendar calendar-trigger"></i>
+                    </div>
+                    <button onclick="searchComputerData()">חפש</button>
+                </div>
+            </div>
+            
+            <div id="computer-search-results" class="results-container"></div>
         </div>
     </div>
 
-    <!-- Alerts -->
-    <div class="alert" id="alertBox"></div>
+    <!-- פופ-אפ תוצאות חיפוש -->
+    <div id="search-results-popup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closeSearchResults()">&times;</span>
+            <h2>תוצאות חיפוש</h2>
+            <div class="results-container" id="search-results"></div>
+        </div>
+    </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="dashboard.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

