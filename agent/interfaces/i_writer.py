@@ -1,12 +1,14 @@
 from abc import ABC, abstractmethod
-from typing import Any
 
 class IWriter(ABC):
+    """Interface for writing data"""
+    
     @abstractmethod
-    def write(self, data: Any):
-        pass
-
-    @abstractmethod
-    def close(self):
+    def write(self, data: str):
+        """Write data to the destination"""
         pass
     
+    @abstractmethod
+    def close(self):
+        """Close any open resources"""
+        pass

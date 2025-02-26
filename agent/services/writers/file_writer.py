@@ -1,16 +1,18 @@
 from interfaces.i_writer import IWriter
 
 class FileWriter(IWriter):
-    def __init__(self, filepath: str):
-        self.filepath = filepath
-        self.file = None
-
-    def write(self, data: str) -> None:
-        if not self.file:
-            self.file = open(self.filepath, 'a', encoding='utf-8')
-        self.file.write(data + '\n')
-        self.file.flush()
-
-    def close(self) -> None:
-        if self.file:
+    """File implementation of writer interface"""
+    
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+        self.file = open(file_path, "w")
+        
+    def write(self, data: str):
+        """Write data to the file"""
+        self.file.write(data)
+        self.file.flush()  # Ensure data is written immediately
+        
+    def close(self):
+        """Close the file"""
+        if self.file and not self.file.closed:
             self.file.close()
