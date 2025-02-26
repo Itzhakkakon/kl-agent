@@ -1,202 +1,173 @@
-const API_URL = 'http://127.0.0.1:5000/api';
-
-const computersContainer = document.getElementById('computer-list');
-
-
+let isRecording = false;
 
 function startRecording() {
-    alert("הקלטה הופעלה!");
+    const button = event.target;
+    if (!isRecording) {
+        isRecording = true;
+        button.style.backgroundColor = '#f44336';
+        button.innerHTML = 'מקליט... <div class="loading"></div>';
+        showNotification("הקלטה הופעלה!");
+    }
 }
 
 function stopRecording() {
-    alert("הקלטה נעצרה!");
+    const recordButton = document.querySelector('button');
+    if (isRecording) {
+        isRecording = false;
+        recordButton.style.backgroundColor = '';
+        recordButton.textContent = 'הפעל הקלטה';
+        showNotification("הקלטה נעצרה!");
+    }
 }
 
 function search() {
-    let query = document.getElementById("search-box").value;
-    alert("מחפש: " + query);
+    const searchBox = document.getElementById('search-box');
+    const searchTerm = searchBox.value;
+    searchBox.insertAdjacentHTML('afterend', '<div class="loading"></div>');
+    setTimeout(() => {
+        const loadingEl = document.querySelector('.loading');
+        if (loadingEl) loadingEl.remove();
+        showNotification("מחפש: " + searchTerm);
+    }, 1000);
 }
 
 // פותח פופ-אפ למחשב
 function openPopup(computerName) {
-    const computer = computers.get(computerName) || {
-        name: computerName,
-        ip: 'לא זמין',
-        location: 'לא זמין'
-    };
-
-    document.getElementById("popup-title").innerText = "אפשרויות עבור " + computerName;
-    document.getElementById("computer-details").innerHTML = `
-        <div class="computer-info">
-            <p><strong>שם מחשב:</strong> ${computer.name}</p>
-            <p><strong>כתובת IP:</strong> ${computer.ip}</p>
-            <p><strong>מיקום:</strong> ${computer.location}</p>
-        </div>
-    `;
-    document.getElementById("popup").style.display = "block";
+    const popup = document.getElementById('popup');
+    const popupContent = popup.querySelector('.popup-content');
+    const popupTitle = document.getElementById('popup-title');
+    popup.style.display = 'block';
+    popup.classList.add('active');
+    popupTitle.textContent = computerName;
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => {
+        popupContent.style.transform = 'translateY(0)';
+        popupContent.style.opacity = '1';
+    });
 }
 
 // סוגר את הפופ-אפ
 function closePopup() {
-    document.getElementById("popup").style.display = "none";
+    const popup = document.getElementById('popup');
+    const popupContent = popup.querySelector('.popup-content');
+    popupContent.style.transform = 'translateY(20px)';
+    popupContent.style.opacity = '0';
+    popup.classList.remove('active');
+    setTimeout(() => {
+        popup.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    },300);
 }
-
 
 // חיפוש בפופ-אפ
 function searchPopup() {
-    let query = document.getElementById("popup-search").value;
-    alert("מחפש בתוך המחשב: " + query);
-    fetchComputerDetails(query);
+    const searchBox = document.getElementById('popup-search');
+    const searchTerm = searchBox.value;
+    searchBox.insertAdjacentHTML('afterend', '<div class="loading"></div>');
+    setTimeout(() => {
+        const loadingEl = document.querySelector('.loading');
+        if (loadingEl) loadingEl.remove();
+        showNotification("מחפש בתוך המחשב: " + searchTerm);
+    },1000);
 }
 
-
-
-// Fix gauge initialization - make sure it runs after DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    const gaugeElement = document.getElementById('activity-gauge');
-    if (gaugeElement) {
-        const gauge = new Gauge(gaugeElement);
-        gauge.maxValue = 24;
-        gauge.setMinValue(0);
-        gauge.animationSpeed = 32;
-        gauge.set(0);
-        
-        // Configure gauge appearance
-        gauge.setOptions({
-            angle: -0.2,
-            lineWidth: 0.2,
-            radiusScale: 0.9,
-            pointer: {
-                length: 0.6,
-                strokeWidth: 0.035,
-                color: '#00ff00'
-            },
-            limitMax: false,
-            limitMin: false,
-            colorStart: '#6FADCF',
-            colorStop: '#8FC0DA',
-            strokeColor: '#E0E0E0',
-            generateGradient: true,
-            highDpiSupport: true,
-            percentColors: [[0.0, "#a9d70b"], [0.50, "#f9c802"], [1.0, "#ff0000"]]
+function addButtonRippleEffect() {
+    document.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', e => {
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            button.appendChild(ripple);
+            const rect = button.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            setTimeout(() => ripple.remove(), 600);
         });
-
-        // Update gauge every minute
-        setInterval(() => {
-            let currentValue = parseFloat(document.getElementById('active-time').textContent);
-            if (currentValue < 24) {
-                currentValue += 0.1;
-                document.getElementById('active-time').textContent = currentValue.toFixed(1);
-                gauge.set(currentValue);
-            }
-        }, 60000);
-    }
-});
-
-function openAddComputerPopup() {
-    document.getElementById('add-computer-popup').style.display = 'block';
-}
-
-function closeAddComputerPopup() {
-    document.getElementById('add-computer-popup').style.display = 'none';
-}
-
-// Add computer storage
-const computers = new Map();
-
-// Fix computer addition functionality
-document.getElementById('add-computer-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const computerName = document.getElementById('computer-name').value;
-    const computerIP = document.getElementById('computer-ip').value;
-    const computerLocation = document.getElementById('computer-location').value;
-
-    // Store computer details
-    computers.set(computerName, {
-        name: computerName,
-        ip: computerIP,
-        location: computerLocation
-    });
-
-    // Create new computer element
-    const computerList = document.querySelector('.computer-list');
-    const newComputer = document.createElement('div');
-    newComputer.className = 'computer';
-    newComputer.innerHTML = `
-        <i class="fas fa-laptop"></i>
-        <span>${computerName}</span>
-    `;
-    
-    // Add click handler
-    newComputer.addEventListener('click', () => openPopup(computerName));
-    
-    // Add to list
-    computerList.appendChild(newComputer);
-
-    // Update counter
-    const countElement = document.getElementById('computer-count');
-    const currentCount = parseInt(countElement.textContent);
-    countElement.textContent = currentCount + 1;
-
-    // Clear and close form
-    document.getElementById('add-computer-form').reset();
-    closeAddComputerPopup();
-});
-
-// UI Rendering Functions
-function renderComputersList(computers) {
-    computersContainer.innerHTML = '';
-    
-    if (computers.length === 0) {
-        computersContainer.innerHTML = '<p>לא נמצאו מחשבים</p>';
-        return;
-    }
-    
-    computers.forEach(computer => {
-        const computerElement = document.createElement('div');
-        computerElement.onclick =() => openPopup(computer)
-        computerElement.className = 'computer';
-        computerElement.innerHTML = `
-            <i class="fas fa-laptop"></i>
-            <span>${computer}</span>`
-        
-            computersContainer.appendChild(computerElement);
     });
 }
 
-// '/api/computers/<pc>', methods=['GET']
+function goToStats() {
+    window.location.href = 'stats.html';
+}
 
-async function fetchComputerDetails(computer) {
-    try {
-        const response = await fetch(`${API_URL}/computers/${computer}`);
-        const data = await response.json();
-        
-        if (response.ok) {
-            alert(data[0]["data"]);
-        } else {
-            showError(student.error || 'שגיאה בטעינת פרטי המחשב');
-        }
-    } catch (error) {
-        alert('שגיאה בטעינת פרטי המחשב');
-        console.error('Error fetching computer details:', error);
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 500);
+    }, 3000);
+}
+
+function addUser() {
+    const userName = prompt("הכנס שם משתמש:");
+    if (userName) {
+        const userTable = document.getElementById('user-table');
+        const newRow = userTable.insertRow();
+        const cell1 = newRow.insertCell(0);
+        const cell2 = newRow.insertCell(1);
+        cell1.textContent = userName;
+        cell2.innerHTML = '<button onclick="removeUser(this)">הסר</button>';
+        showNotification("משתמש נוסף בהצלחה!");
     }
 }
 
-// API Functions
-async function fetchComputer() {
-    try {
-        const response = await fetch(`${API_URL}/computers`);
-        const computers = await response.json();
-        renderComputersList(computers);
-    } catch (error) {
-        alert('שגיאה בטעינת רשימת המחשבים');
-        console.error('Error fetching computers:', error);
-    }
+function removeUser(button) {
+    const row = button.parentNode.parentNode;
+    row.parentNode.removeChild(row);
+    showNotification("משתמש הוסר בהצלחה!");
 }
 
-// Initialize the application
+document.addEventListener('DOMContentLoaded', addButtonRippleEffect);
+
+window.onclick = function(e) {
+    const popup = document.getElementById('popup');
+    if (e.target == popup) closePopup();
+};
+
+let settings = {
+    autoRefresh: true,
+    notificationsEnabled: true,
+    updateInterval: 5000
+};
+
+function openSettings() {
+    document.getElementById('settingsPanel').classList.add('open');
+}
+
+function toggleAutoRefresh() {
+    settings.autoRefresh = !settings.autoRefresh;
+    showAlert(`רענון אוטומטי ${settings.autoRefresh ? 'הופעל' : 'כובה'}`);
+}
+
+function toggleNotifications() {
+    settings.notificationsEnabled = !settings.notificationsEnabled;
+    showAlert(`התראות ${settings.notificationsEnabled ? 'הופעלו' : 'כובו'}`);
+}
+
+function changeUpdateInterval(interval) {
+    settings.updateInterval = parseInt(interval);
+    showAlert(`תדירות העדכון שונתה ל-${interval/1000} שניות`);
+}
+
+function showAlert(message) {
+    const alert = document.getElementById('alertBox');
+    alert.textContent = message;
+    alert.classList.add('show');
+    setTimeout(() => alert.classList.remove('show'), 3000);
+}
+
+// Initialize dark mode from localStorage
 document.addEventListener('DOMContentLoaded', () => {
-    fetchComputer();
-    setupEventListeners();
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+    }
 });

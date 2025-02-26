@@ -1,242 +1,432 @@
-/* Add logo styles at the beginning of the file */
-.logo {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1000;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-    width: 180px;        /* Increased width */
-    height: 80px;        /* Increased height */
-    background: rgba(0, 0, 0, 0.5);
-    padding: 8px;        /* Slightly increased padding */
-    display: flex;       /* Added for better centering */
-    align-items: center; /* Center vertically */
-    justify-content: center; /* Center horizontally */
+:root {
+    --primary-color: #2196F3;
+    --secondary-color: #1976D2;
+    --background-dark: #1a1a1a;
+    --text-light: #ffffff;
+    --accent-color: #64B5F6;
 }
 
-.logo img {
-    width: 100%;
-    height: auto;        /* Changed to auto to maintain aspect ratio */
-    max-height: 100%;    /* Ensure it doesn't overflow */
-    object-fit: contain;
-    border-radius: 8px;
-    transition: transform 0.3s ease;
-}
-
-/* עיצוב כללי */
+/* Reset and Base */
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
-    color: white;
+    min-height: 100vh;
+    background: #000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-light);
     text-align: center;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
 }
 
-/* וידאו רקע מונפש - אנימציה של סייבר */
+/* Background and Animation */
+.background-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
 .cyber-background {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: url('https://rt-ed.co.il/wp-content/uploads/2023/10/dalle-2023-10-23-173853-illustration-of-a-cybersecurity-hero-standing-tall-with-a-digital-shield-in-one-hand-reflecting-a-hacker-icon-away-behind-him-a-bright-city-skyline-6536862b480fb.webp') no-repeat center center;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://www.ecomschool.co.il/wp-content/uploads/2023/12/%D7%AA%D7%A0%D7%90%D7%99-%D7%A7%D7%91%D7%9C%D7%94-%D7%A1%D7%99%D7%99%D7%91%D7%A8-%D7%95%D7%90%D7%91%D7%98%D7%97%D7%AA-%D7%9E%D7%99%D7%93%D7%A2.jpg');
     background-size: cover;
-    animation: pulse 20s infinite ease-in-out;
-    z-index: -1;
+    background-position: center;
+    background-repeat: no-repeat;
+    animation: cyberpulse 8s ease-in-out infinite;
 }
 
-/* אנימציה מרצדת לסייבר */
-@keyframes pulse {
-    0% { opacity: 0.7; transform: scale(1); }
-    50% { opacity: 1.05; transform: scale(1.05); }
-    100% { opacity: 0.7; transform: scale(1); }
+@keyframes cyberpulse {
+    0% {
+        filter: brightness(0.8) saturate(1);
+        transform: scale(1);
+    }
+    50% {
+        filter: brightness(1) saturate(1.1);
+        transform: scale(1.02);
+    }
+    100% {
+        filter: brightness(0.8) saturate(1);
+        transform: scale(1);
+    }
 }
 
-/* קונטיינר */
+/* Container */
 .container {
+    position: relative;
+    z-index: 2;
+    width: 90%;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.5); /* הפחתת השקיפות */
+    border-radius: 15px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 20px rgba(33, 150, 243, 0.3);
+}
+
+/* Button Styles with Ripple Effect */
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 5px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button.stats-button {
+    background-color: var(--secondary-color);
+    margin-top: 20px;
+}
+
+button.stats-button:hover {
+    background-color: var(--primary-color);
+}
+
+/* Ripple pseudo-element */
+button .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    transform: scale(0);
+    animation: rippleEffect 0.6s linear;
+}
+
+@keyframes rippleEffect {
+    to { transform: scale(4); opacity: 0; }
+}
+
+/* Computer List */
+.computer-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+    padding: 1rem;
+}
+
+.computer {
+    background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
+    padding: 1.5rem;
+    border-radius: 15px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.computer:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(33,150,243,0.2);
+    border-color: var(--primary-color);
+}
+
+.computer i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    animation: glow 2s infinite;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow {
+    0% { text-shadow: 0 0 5px rgba(33,150,243,0.2); }
+    50% { text-shadow: 0 0 20px rgba(33,150,243,0.6); }
+    100% { text-shadow: 0 0 5px rgba(33,150,243,0.2); }
+}
+
+/* Inputs */
+input[type="text"], input[type="datetime-local"] {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid var(--accent-color);
+    border-radius: 25px;
+    padding: 10px 20px;
+    color: white;
+    font-size: 1rem;
+    margin: 10px 0;
+    width: 100%;
+    max-width: 300px;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(33,150,243,0.3);
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 0.8s linear infinite;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Popup */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.popup.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.popup-content {
+    background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+    border-radius: 20px;
+    padding: 30px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80%;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 20px cyan;
-}
-
-/* כפתורים */
-button {
-    background-color: green;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    margin: 10px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.3s ease-in-out;
-}
-
-button:hover {
-    background-color: darkgreen;
-}
-
-/* רשימת המחשבים */
-#computer-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    margin: 20px 0;
-    padding: 20px;
-}
-
-.computer {
-    flex: 0 0 200px;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
-}
-
-.computer:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.7);
-}
-
-.computer i {
-    font-size: 50px;
-    color: cyan;
-}
-
-.computer span {
-    display: block;
-    margin-top: 10px;
-    font-size: 18px;
-}
-
-/* פופ-אפ */
-.popup {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.9);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 20px cyan;
-    z-index: 2;
-}
-
-.popup-content {
+    min-width: 300px;
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 0 30px rgba(33, 150, 243, 0.2);
     text-align: center;
     color: white;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translate(-50%, -40%); opacity: 0; }
+    to { transform: translate(-50%, -50%); opacity: 1; }
+}
+
+.popup.active .popup-content {
+    transform: translateY(0);
+    opacity: 1;
 }
 
 .close {
     position: absolute;
-    top: 10px;
     right: 20px;
+    top: 20px;
     font-size: 24px;
     cursor: pointer;
+    color: var(--text-light);
+    transition: color 0.3s;
 }
 
-.statistics-section {
-    text-align: center;
-    margin: 20px auto;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-    max-width: 400px;
+.close:hover {
+    color: var(--primary-color);
 }
 
-#activity-gauge {
-    width: 250px !important;
-    height: 250px !important;
-    margin: 0 auto;
+/* Notification */
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--primary-color);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: none;
+    z-index: 1001;
+}
+
+.notification.show {
     display: block;
+    animation: slideInNotification 0.5s ease-out;
 }
 
-.add-computer-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin: 20px auto;
-    padding: 12px 24px;
-    background: #4CAF50;
+@keyframes slideInNotification {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* User Management */
+.user-management {
+    margin-top: 20px;
+}
+
+.user-management h2 {
+    margin-bottom: 10px;
+}
+
+.user-management table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.user-management table, .user-management th, .user-management td {
+    border: 1px solid var(--accent-color);
+}
+
+.user-management th, .user-management td {
+    padding: 10px;
+    text-align: left;
+}
+
+.user-management th {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.user-management td {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-management button {
+    background-color: var(--primary-color);
     color: white;
     border: none;
+    padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background-color 0.3s ease;
 }
 
-.add-computer-btn:hover {
-    background: #45a049;
+.user-management button:hover {
+    background-color: var(--secondary-color);
 }
 
-.form-group {
-    margin-bottom: 15px;
+/* Dark Mode Styles */
+.dark-mode {
+    background: #121212;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
+.dark-mode .container {
+    background: rgba(18, 18, 18, 0.7);
 }
 
-.form-group input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+/* Activity Indicators */
+.activity-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
 }
 
-.submit-btn {
-    width: 100%;
-    padding: 10px;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.activity-level {
+    height: 100%;
+    background: var(--primary-color);
+    width: 0;
+    transition: width 0.5s ease;
 }
 
-.submit-btn:hover {
-    background: #45a049;
-}
-
-.computer-details {
-    background: rgba(0, 0, 0, 0.5);
+/* Export Controls */
+.export-controls {
+    margin: 20px 0;
     padding: 15px;
-    margin: 15px 0;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+}
+
+.export-controls button {
+    margin: 5px;
+    background: var(--secondary-color);
+}
+
+/* Settings Panel */
+.settings-panel {
+    position: fixed;
+    right: -300px;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    padding: 20px;
+    transition: right 0.3s ease;
+    z-index: 1000;
+}
+
+.settings-panel.open {
+    right: 0;
+}
+
+/* Quick Actions */
+.quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.quick-action-btn {
+    flex: 1;
+    min-width: 150px;
+    padding: 15px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Alerts and Notifications */
+.alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
     border-radius: 8px;
-    border: 1px solid rgba(0, 255, 255, 0.3);
+    background: var(--primary-color);
+    color: white;
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
 }
 
-.computer-info {
-    text-align: right;
-    margin-bottom: 15px;
+.alert.show {
+    transform: translateX(0);
 }
 
-.computer-info p {
-    margin: 8px 0;
-    color: #fff;
-}
-
-.computer-info strong {
-    color: cyan;
-    margin-left: 8px;
-}
-
-.popup-controls {
-    margin-top: 20px;
+/* Activity Graphs */
+.activity-graph {
+    width: 100%;
+    height: 200px;
+    margin: 20px 0;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    overflow: hidden;
 }
