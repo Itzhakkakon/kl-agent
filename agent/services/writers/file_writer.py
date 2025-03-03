@@ -5,7 +5,7 @@ class FileWriter(IWriter):
     
     def __init__(self, file_path: str):
         self.file_path = file_path
-        self.file = open(file_path, "w")
+        self.file = open(file_path, "w", encoding='utf-8')
         
     def write(self, data: str):
         """Write data to the file"""

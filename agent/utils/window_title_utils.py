@@ -1,22 +1,28 @@
 import re
 
-class WindowTitleUtils:
-    @staticmethod
-    def clean_window_title(window_title: str) -> str:
-        """Clean the window title by removing sensitive or strange unreadable characters."""
-        if not window_title:
-            return "Unknown"
+def clean_window_title(window_title: str) -> str:
+    """
+    Clean the window title by removing bidirectional control characters
+    and normalizing whitespace.
+    
+    Args:
+        window_title: The raw window title to clean
         
-        # Remove trailing and leading whitespace
-        cleaned_title = window_title.strip()
-        
-        # Filter out strange characters like right-to-left marks and other special Unicode characters
-        # \u200f is RIGHT-TO-LEFT MARK, \u200e is LEFT-TO-RIGHT MARK
-        special_chars = ['\u200f', '\u200e', '\u202e', '\u202b', '\ufeff', '‏', '‎']
-        for char in special_chars:
-            cleaned_title = cleaned_title.replace(char, '')
-            
-        # Use regex to remove other control characters
-        cleaned_title = re.sub(r'[\x00-\x1F\x7F-\x9F]', '', cleaned_title)
-        
-        return cleaned_title
+    Returns:
+        A cleaned window title string
+    """
+    if not window_title:
+        return ""
+    
+    # Remove bidirectional control characters
+    bidi_controls = ['\u202A', '\u202B', '\u202C', '\u202D', '\u202E',
+                     '\u200E', '\u200F', '\u061C']
+    
+    clean_title = window_title
+    for char in bidi_controls:
+        clean_title = clean_title.replace(char, '')
+    
+    # Normalize whitespace
+    clean_title = ' '.join(clean_title.split())
+    
+    return clean_title

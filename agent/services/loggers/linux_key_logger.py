@@ -3,13 +3,12 @@ from typing import List
 import time
 from interfaces.i_key_logger import IKeyLogger
 from factories.window_title_factory import WindowTitleFactory
-from utils.window_title_utils import WindowTitleUtils
+from utils.window_title_utils import clean_window_title
 from models.keystroke import Keystroke
 
 class LinuxKeyLogger(IKeyLogger):
     def __init__(self):
         self.window_title_service = WindowTitleFactory.create_window_title()
-        self.window_title_utils = WindowTitleUtils()
         self.logged_keys: List[Keystroke] = []
         self.listener = None
         
@@ -24,7 +23,7 @@ class LinuxKeyLogger(IKeyLogger):
     def on_press(self, key):
         """callback function that is called when a key is pressed"""
         window_title = self.window_title_service.get_active_window_title()
-        clean_window = self.window_title_utils.clean_window_title(window_title)
+        clean_window = clean_window_title(window_title)
         
         keystroke = Keystroke(key, time.time(), clean_window)
         # print([keystroke]) 

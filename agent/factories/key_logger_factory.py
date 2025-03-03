@@ -5,17 +5,17 @@ from utils.system_info import get_system_name
 
 class KeyLoggerFactory:
     @staticmethod
-    def create_logger(writer: IWriter) -> IKeyLogger:
+    def create_logger() -> IKeyLogger:
         system = get_system_name()
         
         if system == "windows":
             from services.loggers.windows_key_logger import WindowsKeyLogger
-            return WindowsKeyLogger(writer)
+            return WindowsKeyLogger()
         elif system == "linux":
             from services.loggers.linux_key_logger import LinuxKeyLogger
             return LinuxKeyLogger()
         elif system == "darwin": # macOS
             from services.loggers.mac_key_logger import MacKeyLogger
-            return MacKeyLogger(writer)
+            return MacKeyLogger()
             
         raise NotImplementedError(f"No key logger implementation for {system}")
